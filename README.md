@@ -75,5 +75,5 @@ This software is released under the [MIT License].
 
 [BaseKit]: http://basekit.com/
 [PHPUnit]: http://phpunit.de/
-[PSR2]: http://www.php-fig.org/psr/psr-2/
+[PSR-2]: http://www.php-fig.org/psr/psr-2/
 [MIT License]: http://www.opensource.org/licenses/MIT
