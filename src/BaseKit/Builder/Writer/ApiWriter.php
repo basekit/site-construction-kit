@@ -18,12 +18,15 @@ class ApiWriter implements WriterInterface
 
     public function createSite($brandRef, $accountHolderRef, $domain)
     {
-        $createSiteCmd = $this->apiClient->getCommand('CreateSite', array(
-            'brandRef' => $brandRef,
-            'accountHolderRef' => $accountHolderRef,
-            'domain' => $domain,
-            'type' => 'responsive'
-        ));
+        $createSiteCmd = $this->apiClient->getCommand(
+            'CreateSite',
+            array(
+                'brandRef' => $brandRef,
+                'accountHolderRef' => $accountHolderRef,
+                'domain' => $domain,
+                'type' => 'responsive'
+            )
+        );
 
         $response = $createSiteCmd->execute();
 
@@ -34,8 +37,9 @@ class ApiWriter implements WriterInterface
 
     public function write(PageBuilder $page)
     {
-        try {
-            $createPageCmd = $this->apiClient->getCommand('CreateSitePage', array(
+        $createPageCmd = $this->apiClient->getCommand(
+            'CreateSitePage',
+            array(
                 'menu' => 1,
                 'siteRef' => $this->siteRef,
                 'pageUrl' => $page->getName() . 'x', // @todo: remove default home page
@@ -43,12 +47,10 @@ class ApiWriter implements WriterInterface
                 'status' => 'active',
                 'title' => $page->getTitle(),
                 'type' => 'page'
-            ));
+            )
+        );
 
-            $response = $createPageCmd->execute();
-        } catch (\Exception $e) {
-            exit($e->getMessage());
-        }
+        $response = $createPageCmd->execute();
 
         $page->setRef($response['page']['ref']);
 
@@ -62,24 +64,27 @@ class ApiWriter implements WriterInterface
             $values = $widget->getValues();
             $collections = $widget->getCollections();
 
-            $addWidgetCmd = $this->apiClient->getCommand('AddWidgetToPage', array(
-                'siteRef' => $this->siteRef,
-                'pageRef' => $page->getRef(),
-                'parentId' => $widget->getId(),
-                'position' => $widget->getPosition(),
-                'collection' => $widget->getCollectionName(),
-                'type' => $widget->getType(),
-                'name' => $widget->getName(),
-                'libraryItemRef' => 0,
-                'templateRef' => 0,
-                'values' => $values
-            ));
+            $addWidgetCmd = $this->apiClient->getCommand(
+                'AddWidgetToPage',
+                array(
+                    'siteRef' => $this->siteRef,
+                    'pageRef' => $page->getRef(),
+                    'parentId' => $widget->getId(),
+                    'position' => $widget->getPosition(),
+                    'collection' => $widget->getCollectionName(),
+                    'type' => $widget->getType(),
+                    'name' => $widget->getName(),
+                    'libraryItemRef' => 0,
+                    'templateRef' => 0,
+                    'values' => $values
+                )
+            );
 
             $response = $addWidgetCmd->execute();
 
             $widgetRef = $response['widget']['ref'];
 
-            print("Widget: ref = {$widgetRef}, id = {$widget->getId()}, name = {$widget->getName()}, type = {$widget->getType()}, position = {$widget->getPosition()}" . PHP_EOL);
+            print("Widget: ref = {$widgetRef}, name = {$widget->getName()}, type = {$widget->getType()}" . PHP_EOL);
 
             foreach ($collections as $collection) {
                 $this->writeCollection($collection, $page);

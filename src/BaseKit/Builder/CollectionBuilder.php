@@ -38,10 +38,12 @@ class CollectionBuilder
         $widget->setClassName(str_replace('widget.', '', strtolower($type)));
 
         if ($this->parent !== null && $this->parent->getType() == 'widget.responsivecolumns') {
-            $this->parent->setValues(array_merge(
-                $this->parent->getValues(),
-                array('isEmpty' => 0)
-            ));
+            $this->parent->setValues(
+                array_merge(
+                    $this->parent->getValues(),
+                    array('isEmpty' => 0)
+                )
+            );
         }
 
         // Append the widget to the zone's collection

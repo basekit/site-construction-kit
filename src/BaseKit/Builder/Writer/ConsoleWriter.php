@@ -26,7 +26,7 @@ class ConsoleWriter implements WriterInterface
     {
         foreach ($collection as $widget) {
 
-            print("Widget: id = {$widget->getId()}, name = {$widget->getName()}, type = {$widget->getType()}, position = {$widget->getPosition()}" . PHP_EOL);
+            print("Widget: name = {$widget->getName()}, type = {$widget->getType()}" . PHP_EOL);
 
             foreach ($widget->getValues() as $name => $value) {
                 print("    {$name} = {$value}" . PHP_EOL);
