@@ -38,7 +38,7 @@ Client object and it will use this to build the site.
 
 ```php
 $apiClient = Client::factory(array(
-    'base_url' => 'http://rest.basekit.dom',
+    'base_url' => 'http://rest.basekit.com',
     'consumer_key' => 'YOUR OAUTH CONSUMER KEY',
     'consumer_secret' => 'YOUR OAUTH CONSUMER SECRET',
     'token' => 'YOUR OAUTH ACCESS TOKEN',
@@ -54,7 +54,7 @@ $writer->write($site);
 Contributing
 ------------
 
-This project adheres to the [PSR2] coding style guide. Checking your
+This project adheres to the [PSR-2] coding style guide. Checking your
 contribution's correctness is easy.
 
 ```bash
