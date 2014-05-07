@@ -7,14 +7,24 @@ use BaseKit\Component\Collection;
 
 class PageBuilder extends CollectionBuilder
 {
-    protected $widgets = null;
-    protected $name = '';
     protected $pageRef = 0;
+    protected $widgets = null;
+    protected $name = null;
 
     public function __construct()
     {
         $this->widgets = new Collection;
         parent::__construct('page-zones__main', 'widgets', $this->widgets);
+    }
+
+    public function getPageRef()
+    {
+        return $this->pageRef;
+    }
+
+    public function setPageRef($pageRef)
+    {
+        $this->pageRef = $pageRef;
     }
 
     public function setName($name)
@@ -35,15 +45,5 @@ class PageBuilder extends CollectionBuilder
     public function getTitle()
     {
         return $this->title;
-    }
-
-    public function setRef($pageRef)
-    {
-        $this->pageRef = $pageRef;
-    }
-
-    public function getRef()
-    {
-        return $this->pageRef;
     }
 }

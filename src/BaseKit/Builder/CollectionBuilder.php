@@ -25,7 +25,7 @@ class CollectionBuilder
         return $this->collection;
     }
 
-    public function widget($name, $type, array $values = array())
+    public function addWidget($name, $type, array $values = array())
     {
         // Create the widget
         $widget = new Widget;
@@ -63,7 +63,7 @@ class CollectionBuilder
         return $name . $suffix;
     }
 
-    public function text($content, array $values = array())
+    public function addText($content, array $values = array())
     {
         $name = $this->getUniqueName('text');
 
@@ -76,7 +76,7 @@ class CollectionBuilder
             )
         );
 
-        return $this->widget($name, 'Widget.Content', $values);
+        return $this->addWidget($name, 'Widget.Content', $values);
     }
 
     private function generateLocalClass($type)
@@ -89,7 +89,7 @@ class CollectionBuilder
         return str_replace('.', '-', strtolower($type)) . '-' . $randomCharacters;
     }
 
-    public function image($src, array $values = array())
+    public function addImage($src, array $values = array())
     {
         $name = $this->getUniqueName('image');
 
@@ -100,10 +100,10 @@ class CollectionBuilder
             )
         );
 
-        return $this->widget($name, 'Widget.Image', $values);
+        return $this->addWidget($name, 'Widget.Image', $values);
     }
 
-    public function columns($columns = 2, array $values = array())
+    public function addColumns($columns = 2, array $values = array())
     {
         $name = $this->getUniqueName('responsivecolumns');
 
@@ -126,7 +126,7 @@ class CollectionBuilder
             )
         );
 
-        $widget = $this->widget($name, 'Widget.Responsivecolumns', $values);
+        $widget = $this->addWidget($name, 'Widget.Responsivecolumns', $values);
 
         $zones = new Collection;
         $widget->addCollection('zones', $zones);

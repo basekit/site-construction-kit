@@ -3,72 +3,67 @@
 namespace BaseKit\Builder\Writer;
 
 use BaseKit\Api\Client;
+use BaseKit\Builder\SiteBuilder;
 use BaseKit\Builder\PageBuilder;
 use BaseKit\Component\Collection;
 
 class ApiWriter implements WriterInterface
 {
     private $apiClient = null;
-    private $siteRef = 0;
 
     public function setApiClient(Client $apiClient)
     {
         $this->apiClient = $apiClient;
     }
 
-    public function createSite($brandRef, $accountHolderRef, $domain)
+    public function createSite(SiteBuilder $site)
     {
+        $domains = $site->getDomains();
+
+        if (empty($domains)) {
+            throw new Exception('Site has no domains');
+        }
+
+        $primaryDomain = array_shift($domains);
+
         $createSiteCmd = $this->apiClient->getCommand(
             'CreateSite',
             array(
-                'brandRef' => $brandRef,
-                'accountHolderRef' => $accountHolderRef,
-                'domain' => $domain,
+                'brandRef' => $site->getBrandRef(),
+                'accountHolderRef' => $site->getAccountHolderRef(),
+                'domain' => $primaryDomain,
                 'type' => 'responsive'
             )
         );
 
         $response = $createSiteCmd->execute();
 
-        $this->siteRef = $response['site']['ref'];
+        $siteRef = $response['site']['ref'];
+        $site->setSiteRef($siteRef);
 
-        print("Site: ref = {$this->siteRef}" . PHP_EOL);
+        foreach ($domains as $domain) {
+            $mapDomainCmd = $this->apiClient->getCommand(
+                'MapDomain',
+                array(
+                    'siteRef' => $siteRef,
+                    'domain' => $domain
+                )
+            );
+
+            $response = $mapDomainCmd->execute();
+        }
+
+        print("Site: ref = {$siteRef}" . PHP_EOL);
     }
 
-    public function write(PageBuilder $page)
-    {
-        $createPageCmd = $this->apiClient->getCommand(
-            'CreateSitePage',
-            array(
-                'menu' => 1,
-                'siteRef' => $this->siteRef,
-                'pageUrl' => $page->getName() . 'x', // @todo: remove default home page
-                'seo_title' => $page->getTitle(),
-                'status' => 'active',
-                'title' => $page->getTitle(),
-                'type' => 'page'
-            )
-        );
-
-        $response = $createPageCmd->execute();
-
-        $page->setRef($response['page']['ref']);
-
-        print("Page: ref = {$page->getRef()}, name = {$page->getName()}, title = {$page->getTitle()}" . PHP_EOL);
-        $this->writeCollection($page->getCollection(), $page);
-    }
-
-    private function writeCollection(Collection $collection, PageBuilder $page)
+    private function createCollection(Collection $collection, $siteRef, $pageRef)
     {
         foreach ($collection as $widget) {
-            $values = $widget->getValues();
-            $collections = $widget->getCollections();
-
             $addWidgetCmd = $this->apiClient->getCommand(
                 'AddWidgetToPage',
                 array(
-                    'siteRef' => $this->siteRef,
-                    'pageRef' => $page->getRef(),
+                    'siteRef' => $siteRef,
+                    'pageRef' => $pageRef,
                     'parentId' => $widget->getId(),
                     'position' => $widget->getPosition(),
                     'collection' => $widget->getCollectionName(),
@@ -76,7 +71,7 @@ class ApiWriter implements WriterInterface
                     'name' => $widget->getName(),
                     'libraryItemRef' => 0,
                     'templateRef' => 0,
-                    'values' => $values
+                    'values' => $widget->getValues()
                 )
             );
 
@@ -86,9 +81,43 @@ class ApiWriter implements WriterInterface
 
             print("Widget: ref = {$widgetRef}, name = {$widget->getName()}, type = {$widget->getType()}" . PHP_EOL);
 
-            foreach ($collections as $collection) {
-                $this->writeCollection($collection, $page);
+            foreach ($widget->getCollections() as $collection) {
+                $this->createCollection($collection, $siteRef, $pageRef);
             }
+        }
+    }
+
+    public function writePage(PageBuilder $page, $siteRef)
+    {
+        $createPageCmd = $this->apiClient->getCommand(
+            'CreateSitePage',
+            array(
+                'menu' => 1,
+                'siteRef' => $siteRef,
+                'pageUrl' => $page->getName() . 'x', // @todo: remove default home page
+                'seo_title' => $page->getTitle(),
+                'status' => 'active',
+                'title' => $page->getTitle(),
+                'type' => 'page'
+            )
+        );
+
+        $response = $createPageCmd->execute();
+        $pageRef = $response['page']['ref'];
+        $page->setPageRef($pageRef);
+
+        print("Page: ref = {$pageRef}, name = {$page->getName()}, title = {$page->getTitle()}" . PHP_EOL);
+        $this->createCollection($page->getCollection(), $siteRef, $pageRef);
+    }
+
+    public function writeSite(SiteBuilder $site)
+    {
+        if ($site->getSiteRef() === 0) {
+            $this->createSite($site);
+        }
+
+        foreach ($site->getPages() as $page) {
+            $this->writePage($page, $site->getSiteRef());
         }
     }
 }

@@ -39,33 +39,23 @@ class ColumnsBuilder
         }
     }
 
-    public function left()
+    public function getLeftColumn()
     {
         return reset($this->columns);
     }
 
-    public function right()
-    {
-        return end($this->columns);
-    }
-
-    public function first()
-    {
-        return $this->columns[0];
-    }
-
-    public function second()
+    public function getMiddleColumn()
     {
         return $this->columns[1];
     }
 
-    public function third()
+    public function getRightColumn()
     {
-        return $this->columns[2];
+        return end($this->columns);
     }
 
-    public function fourth()
+    public function getColumn($index)
     {
-        return $this->columns[3];
+        return $this->columns[$index];
     }
 }
