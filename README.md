@@ -48,7 +48,7 @@ $apiClient = Client::factory(array(
 $writer = new ApiWriter();
 $writer->setApiClient($client);
 
-$writer->write($site);
+$writer->writeSite($site);
 ```
 
 Contributing
