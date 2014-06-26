@@ -22,6 +22,8 @@ Here's a quick example of constructing a site, page and adding some widgets.
 
 ```php
 $site = new SiteBuilder;
+$site->setBrandRef(123);
+$site->setAccountHolderRef(456);
 $site->mapDomain('example.com');
 
 $page = $site->createPage('home', 'Home Page');
