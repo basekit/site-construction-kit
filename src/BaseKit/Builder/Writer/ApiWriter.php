@@ -50,7 +50,7 @@ class ApiWriter implements WriterInterface
                 )
             );
 
-            $response = $mapDomainCmd->execute();
+            $mapDomainCmd->execute();
         }
     }
 
@@ -90,7 +90,7 @@ class ApiWriter implements WriterInterface
             array(
                 'menu' => 1,
                 'siteRef' => $siteRef,
-                'pageUrl' => $page->getName() . 'x', // @todo: remove default home page
+                'pageUrl' => $page->getName() == 'home' ? 'temporary' : $page->getName(),
                 'seo_title' => $page->getTitle(),
                 'status' => 'active',
                 'title' => $page->getTitle(),
@@ -101,6 +101,31 @@ class ApiWriter implements WriterInterface
         $response = $createPageCmd->execute();
         $pageRef = $response['page']['ref'];
         $page->setPageRef($pageRef);
+
+        if ($page->getName() == 'home') {
+            // Update the new page to be home page
+            $updatePageCmd = $this->apiClient->getCommand(
+                'UpdateSitepage',
+                array(
+                    'siteRef' => $siteRef,
+                    'pageRef' => $pageRef,
+                    'type' => 'home'
+                )
+            );
+
+            $updatePageCmd->execute();
+
+            // Delete the default home page
+            $deletePageCmd = $this->apiClient->getCommand(
+                'DeleteSitepage/redirect/folder',
+                array(
+                    'siteRef' => $siteRef,
+                    'pageRef' => 1
+                )
+            );
+
+            $deletePageCmd->execute();
+        }
 
         $this->createCollection($page->getCollection(), $siteRef, $pageRef);
     }
@@ -113,6 +138,21 @@ class ApiWriter implements WriterInterface
 
         foreach ($site->getPages() as $page) {
             $this->writePage($page, $site->getSiteRef());
+        }
+    }
+
+    public function publishSite(SiteBuilder $site)
+    {
+        if ($site->getSiteRef() > 0) {
+            $publishSiteCmd = $this->apiClient->getCommand(
+                'PublishSite',
+                array(
+                    'siteRef' => $site->getSiteRef(),
+                    'comment' => 'Automatic publish'
+                )
+            );
+
+            $publishSiteCmd->execute();
         }
     }
 }
