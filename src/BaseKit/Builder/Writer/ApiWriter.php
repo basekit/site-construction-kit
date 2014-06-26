@@ -52,8 +52,6 @@ class ApiWriter implements WriterInterface
 
             $response = $mapDomainCmd->execute();
         }
-
-        print("Site: ref = {$siteRef}" . PHP_EOL);
     }
 
     private function createCollection(Collection $collection, $siteRef, $pageRef)
@@ -78,8 +76,6 @@ class ApiWriter implements WriterInterface
             $response = $addWidgetCmd->execute();
 
             $widgetRef = $response['widget']['ref'];
-
-            print("Widget: ref = {$widgetRef}, name = {$widget->getName()}, type = {$widget->getType()}" . PHP_EOL);
 
             foreach ($widget->getCollections() as $collection) {
                 $this->createCollection($collection, $siteRef, $pageRef);
@@ -106,7 +102,6 @@ class ApiWriter implements WriterInterface
         $pageRef = $response['page']['ref'];
         $page->setPageRef($pageRef);
 
-        print("Page: ref = {$pageRef}, name = {$page->getName()}, title = {$page->getTitle()}" . PHP_EOL);
         $this->createCollection($page->getCollection(), $siteRef, $pageRef);
     }
 
