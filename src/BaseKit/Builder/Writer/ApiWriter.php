@@ -32,7 +32,8 @@ class ApiWriter implements WriterInterface
                 'brandRef' => $site->getBrandRef(),
                 'accountHolderRef' => $site->getAccountHolderRef(),
                 'domain' => $primaryDomain,
-                'type' => 'responsive'
+                'type' => 'responsive',
+                'templateRef' => $site->getTemplateRef() > 0 ? $site->getTemplateRef() : 7
             )
         );
 
@@ -40,6 +41,7 @@ class ApiWriter implements WriterInterface
 
         $siteRef = $response['site']['ref'];
         $site->setSiteRef($siteRef);
+        $site->setProfileRef($response['site']['profileRef']);
 
         foreach ($domains as $domain) {
             $mapDomainCmd = $this->apiClient->getCommand(
@@ -109,7 +111,8 @@ class ApiWriter implements WriterInterface
                 array(
                     'siteRef' => $siteRef,
                     'pageRef' => $pageRef,
-                    'type' => 'home'
+                    'type' => 'home',
+                    'templateType' => 'home'
                 )
             );
 
@@ -153,6 +156,26 @@ class ApiWriter implements WriterInterface
             );
 
             $publishSiteCmd->execute();
+        }
+    }
+
+    public function writeProfile(SiteBuilder $site, array $profileData)
+    {
+        if ($site->getProfileRef() > 0) {
+            $fields = array();
+
+            foreach ($profileData as $name => $value) {
+                array_push($fields, array(
+                    'name' => $name,
+                    'value' => $value
+                ));
+            }
+
+            $response = $this->apiClient->put(sprintf('users/%d/profiles/%d', $site->getAccountHolderRef(), $site->getProfileRef()), array(
+                'Content-Type' => 'application/json'
+            ), json_encode(array(
+                'fields' => $fields
+            )))->send();
         }
     }
 }

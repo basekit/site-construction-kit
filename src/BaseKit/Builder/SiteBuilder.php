@@ -11,6 +11,8 @@ class SiteBuilder
     protected $siteRef = 0;
     protected $brandRef = 0;
     protected $accountHolderRef = 0;
+    protected $profileRef = 0;
+    protected $templateRef = 0;
 
     public function __construct()
     {
@@ -44,6 +46,26 @@ class SiteBuilder
     public function setAccountHolderRef($accountHolderRef)
     {
         $this->accountHolderRef = $accountHolderRef;
+    }
+
+    public function getTemplateRef()
+    {
+        return $this->templateRef;
+    }
+
+    public function setTemplateRef($templateRef)
+    {
+        $this->templateRef = $templateRef;
+    }
+
+    public function getProfileRef()
+    {
+        return $this->profileRef;
+    }
+
+    public function setProfileRef($profileRef)
+    {
+        $this->profileRef = $profileRef;
     }
 
     public function getDomains()
