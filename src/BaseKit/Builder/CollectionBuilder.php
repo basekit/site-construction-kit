@@ -134,4 +134,32 @@ class CollectionBuilder
         // Return the special-case ColumnsBuilder object
         return new ColumnsBuilder($columns, $widget);
     }
+
+    public function addMap(array $values = array())
+    {
+        $name = $this->getUniqueName('map');
+
+        return $this->addWidget($name, 'Widget.Map', $values);
+    }
+
+    public function addContactForm(array $values = array())
+    {
+        $name = $this->getUniqueName('contactform');
+
+        return $this->addWidget($name, 'Widget.Contactform', $values);
+    }
+
+    public function addSpace($height, array $values = array())
+    {
+        $name = $this->getUniqueName('space');
+
+        $values = array_merge(
+            $values,
+            array(
+                'height' => $height
+            )
+        );
+
+        return $this->addWidget($name, 'Widget.Space', $values);
+    }
 }
