@@ -107,7 +107,7 @@ class ApiWriter implements WriterInterface
         if ($page->getName() == 'home') {
             // Update the new page to be home page
             $updatePageCmd = $this->apiClient->getCommand(
-                'UpdateSitepage',
+                'UpdateSitePage',
                 array(
                     'siteRef' => $siteRef,
                     'pageRef' => $pageRef,
@@ -120,7 +120,7 @@ class ApiWriter implements WriterInterface
 
             // Delete the default home page
             $deletePageCmd = $this->apiClient->getCommand(
-                'DeleteSitepage/redirect/folder',
+                'DeleteSitePage',
                 array(
                     'siteRef' => $siteRef,
                     'pageRef' => 1
