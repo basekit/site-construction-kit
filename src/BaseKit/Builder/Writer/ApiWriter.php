@@ -32,7 +32,7 @@ class ApiWriter implements WriterInterface
                 'brandRef' => $site->getBrandRef(),
                 'accountHolderRef' => $site->getAccountHolderRef(),
                 'domain' => $primaryDomain,
-                'type' => 'responsive',
+                'siteType' => 'responsive',
                 'templateRef' => $site->getTemplateRef() > 0 ? $site->getTemplateRef() : 7
             )
         );
