@@ -21,6 +21,8 @@ Usage
 Here's a quick example of constructing a site, page and adding some widgets.
 
 ```php
+use BaseKit\Builder\SiteBuilder;
+
 $site = new SiteBuilder;
 $site->setBrandRef(123);
 $site->setAccountHolderRef(456);
@@ -39,6 +41,9 @@ You will typically use the ApiWriter class. You provide this with a BaseKit API
 Client object and it will use this to build the site.
 
 ```php
+use BaseKit\Api\Client;
+use BaseKit\Builder\Writer\ApiWriter;
+
 $apiClient = Client::factory(array(
     'base_url' => 'http://rest.basekit.com',
     'consumer_key' => 'YOUR OAUTH CONSUMER KEY',
@@ -47,7 +52,7 @@ $apiClient = Client::factory(array(
     'token_secret' => 'YOUR OAUTH ACCESS SECRET'
 ));
 
-$writer = new ApiWriter();
+$writer = new ApiWriter;
 $writer->setApiClient($client);
 
 $writer->writeSite($site);
