@@ -53,7 +53,7 @@ $apiClient = Client::factory(array(
 ));
 
 $writer = new ApiWriter;
-$writer->setApiClient($client);
+$writer->setApiClient($apiClient);
 
 $writer->writeSite($site);
 ```
