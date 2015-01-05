@@ -6,6 +6,7 @@ use BaseKit\Api\Client;
 use BaseKit\Builder\SiteBuilder;
 use BaseKit\Builder\PageBuilder;
 use BaseKit\Component\Collection;
+use BaseKit\Builder\AccountHolderBuilder;
 
 class ApiWriter implements WriterInterface
 {
@@ -165,17 +166,49 @@ class ApiWriter implements WriterInterface
             $fields = array();
 
             foreach ($profileData as $name => $value) {
-                array_push($fields, array(
-                    'name' => $name,
-                    'value' => $value
-                ));
+                array_push(
+                    $fields,
+                    array(
+                        'name' => $name,
+                        'value' => $value
+                    )
+                );
             }
 
-            $response = $this->apiClient->put(sprintf('users/%d/profiles/%d', $site->getAccountHolderRef(), $site->getProfileRef()), array(
-                'Content-Type' => 'application/json'
-            ), json_encode(array(
-                'fields' => $fields
-            )))->send();
+            $response = $this->apiClient->put(
+                sprintf(
+                    'users/%d/profiles/%d',
+                    $site->getAccountHolderRef(),
+                    $site->getProfileRef()
+                ),
+                array(
+                    'Content-Type' => 'application/json'
+                ),
+                json_encode(
+                    array(
+                        'fields' => $fields
+                    )
+                )
+            )->send();
         }
+    }
+
+    public function writeAccountHolder(AccountHolderBuilder $accountHolder)
+    {
+        $createUserCmd = $this->apiClient->getCommand(
+            'CreateUser',
+            array(
+                'username' => $accountHolder->getUsername(),
+                'password' => $accountHolder->getPassword(),
+                'firstName' => $accountHolder->getFirstName(),
+                'lastName' => $accountHolder->getLastName(),
+                'email' => $accountHolder->getEmail(),
+                'brandRef' => $accountHolder->getBrandRef(),
+                'languageCode' => $accountHolder->getLanguageCode(),
+            )
+        );
+
+        $response = $createUserCmd->execute();
+        $accountHolder->setRef($response['accountHolder']['ref']);
     }
 }

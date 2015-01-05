@@ -41,4 +41,9 @@ class ConsoleWriter implements WriterInterface
             $this->writePage($page, $site->getSiteRef());
         }
     }
+
+    public function writeAccountHolder(AccountHolderBuilder $accountHolder)
+    {
+        print("Account Holder: ref = {$accountHolder->getRef()}" . PHP_EOL);
+    }
 }
