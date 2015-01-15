@@ -14,7 +14,7 @@ $site->mapDomain($timestamp . '-a.basekit.dev');
 $site->mapDomain($timestamp . '-b.basekit.dev');
 $site->mapDomain($timestamp . '-c.basekit.dev');
 
-$page = $site->createPage('test', 'Test Page');
+$page = $site->createPage('test', 'Test Page', 'default');
 
 $page->addText('<h1>Hello World</h1>');
 

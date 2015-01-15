@@ -6,6 +6,7 @@ A change log for basekit site construction kit
 ### Added
 
 * added `AccountHolderBuilder` and `AccountHolder writer`
+* added `setTemplateType` to SiteBuilder to be able to set the page template type
 
 ## 0.1.0 - 2014-15-06
 

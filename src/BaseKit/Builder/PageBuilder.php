@@ -10,6 +10,7 @@ class PageBuilder extends CollectionBuilder
     protected $pageRef = 0;
     protected $widgets = null;
     protected $name = null;
+    protected $templateType = 'default';
 
     public function __construct()
     {
@@ -45,5 +46,15 @@ class PageBuilder extends CollectionBuilder
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function setTemplateType($templateType)
+    {
+        $this->templateType = $templateType;
+    }
+
+    public function getTemplateType()
+    {
+        return $this->templateType;
     }
 }

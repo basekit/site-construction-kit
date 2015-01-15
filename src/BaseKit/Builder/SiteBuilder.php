@@ -94,7 +94,7 @@ class SiteBuilder
         return $this->pages[$name];
     }
 
-    public function createPage($name, $title)
+    public function createPage($name, $title, $templateType = 'default')
     {
         if (empty($name)) {
             throw new Exception('Page name must be set');
@@ -107,6 +107,7 @@ class SiteBuilder
         $page = new PageBuilder;
         $page->setName($name);
         $page->setTitle($title);
+        $page->setTemplateType($templateType);
 
         $this->pages[$name] = $page;
 

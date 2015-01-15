@@ -97,7 +97,8 @@ class ApiWriter implements WriterInterface
                 'seo_title' => $page->getTitle(),
                 'status' => 'active',
                 'title' => $page->getTitle(),
-                'type' => 'page'
+                'type' => 'page',
+                'templateType' => $page->getTemplateType()
             )
         );
 
