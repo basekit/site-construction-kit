@@ -34,7 +34,6 @@ class ApiWriter implements WriterInterface
                 'accountHolderRef' => $site->getAccountHolderRef(),
                 'domain' => $primaryDomain,
                 'siteType' => 'responsive',
-                'templateRef' => $site->getTemplateRef() > 0 ? $site->getTemplateRef() : 7
             )
         );
 
@@ -43,6 +42,15 @@ class ApiWriter implements WriterInterface
         $siteRef = $response['site']['ref'];
         $site->setSiteRef($siteRef);
         $site->setProfileRef($response['site']['profileRef']);
+
+        $updateSiteCmd = $this->apiClient->getCommand(
+            'UpdateSite',
+            array(
+                'siteRef' => $siteRef,
+                'templateRef' => $site->getTemplateRef() > 0 ? $site->getTemplateRef() : 7,
+            )
+        );
+        $response = $updateSiteCmd->execute();
 
         foreach ($domains as $domain) {
             $mapDomainCmd = $this->apiClient->getCommand(
@@ -133,6 +141,10 @@ class ApiWriter implements WriterInterface
         }
 
         $this->createCollection($page->getCollection(), $siteRef, $pageRef);
+
+        $this->setHiddenTemplateWidgets($page, $siteRef);
+
+        $this->setFeatureImage($page, $siteRef);
     }
 
     public function writeSite(SiteBuilder $site)
@@ -211,5 +223,45 @@ class ApiWriter implements WriterInterface
 
         $response = $createUserCmd->execute();
         $accountHolder->setRef($response['accountHolder']['ref']);
+    }
+
+    private function setHiddenTemplateWidgets(PageBuilder $page, $siteRef)
+    {
+        foreach ($page->getHiddenTemplateWidgets() as $staticWidgetId) {
+            $updateStaticValuesCmd = $this->apiClient->getCommand(
+                'Updatestaticvaluesforastaticwidget',
+                array(
+                    'siteRef' => $siteRef,
+                    'staticWidgetId' => $staticWidgetId,
+                    'values' => array(
+                        'showTplWidget' => 0,
+                    ),
+                )
+            );
+
+            $updateStaticValuesCmd->execute();
+        }
+    }
+
+    private function setFeatureImage(PageBuilder $page, $siteRef)
+    {
+        if (null === ($featureImageUrl = $page->getFeatureImageUrl())) {
+            return;
+        }
+
+        $updateFeatureImageCmd = $this->apiClient->getCommand(
+            'Updatestaticvaluesforastaticwidget',
+            array(
+                'siteRef' => $siteRef,
+                'staticWidgetId' => 'feature-featurehome',
+                'values' => array(
+                    'bgImg' => $page->getFeatureImageUrl(),
+                    'useTemplate' => 0,
+                    'showTplWidget' => 1
+                ),
+            )
+        );
+
+        $updateFeatureImageCmd->execute();
     }
 }

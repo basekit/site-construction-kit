@@ -11,6 +11,8 @@ class CollectionBuilder
     protected $collectionName;
     protected $collection;
     protected $parent;
+    protected $featureImageUrl = null;
+    protected $hiddenTemplateWidgets = array();
 
     public function __construct($id, $collectionName, Collection $collection, Widget $parent = null)
     {
@@ -161,5 +163,25 @@ class CollectionBuilder
         );
 
         return $this->addWidget($name, 'Widget.Space', $values);
+    }
+
+    public function setHiddenTemplateWidgets($hiddenTemplateWidgets)
+    {
+        $this->hiddenTemplateWidgets = $hiddenTemplateWidgets;
+    }
+
+    public function getHiddenTemplateWidgets()
+    {
+        return $this->hiddenTemplateWidgets;
+    }
+
+    public function setFeatureImageUrl($featureImageUrl)
+    {
+        $this->featureImageUrl = $featureImageUrl;
+    }
+
+    public function getFeatureImageUrl()
+    {
+        return $this->featureImageUrl;
     }
 }
