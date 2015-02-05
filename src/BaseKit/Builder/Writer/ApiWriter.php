@@ -253,7 +253,7 @@ class ApiWriter implements WriterInterface
             'Updatestaticvaluesforastaticwidget',
             array(
                 'siteRef' => $siteRef,
-                'staticWidgetId' => 'feature-featurehome',
+                'staticWidgetId' => $page->getFeatureWidgetId(),
                 'values' => array(
                     'bgImg' => $page->getFeatureImageUrl(),
                     'useTemplate' => 0,

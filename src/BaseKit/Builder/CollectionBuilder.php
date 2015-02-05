@@ -12,6 +12,7 @@ class CollectionBuilder
     protected $collection;
     protected $parent;
     protected $featureImageUrl = null;
+    protected $featureWidgetId = 'feature-featurehome';
     protected $hiddenTemplateWidgets = array();
 
     public function __construct($id, $collectionName, Collection $collection, Widget $parent = null)
@@ -173,6 +174,16 @@ class CollectionBuilder
     public function getHiddenTemplateWidgets()
     {
         return $this->hiddenTemplateWidgets;
+    }
+
+    public function setFeatureWidgetId($featureWidgetId)
+    {
+        $this->featureWidgetId = 'feature-' . $featureWidgetId;
+    }
+
+    public function getFeatureWidgetId()
+    {
+        return $this->featureWidgetId;
     }
 
     public function setFeatureImageUrl($featureImageUrl)
