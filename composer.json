@@ -19,7 +19,7 @@
     },
 
     "require": {
-        "basekit/php-api-client": "dev-master#1.1.0"
+        "basekit/php-api-client": "1.1.1"
     },
 
     "require-dev": {
@@ -29,7 +29,7 @@
     "repositories": [
         {
           "type": "vcs",
-          "url": "https://bitbucket.org/basekit/php-api-client.git"
+          "url": "https://github.com/basekit/php-api-client.git"
         }
     ]
 }
