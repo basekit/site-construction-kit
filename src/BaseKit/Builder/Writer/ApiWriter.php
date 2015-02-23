@@ -257,7 +257,8 @@ class ApiWriter implements WriterInterface
                 'values' => array(
                     'bgImg' => $page->getFeatureImageUrl(),
                     'useTemplate' => 0,
-                    'showTplWidget' => 1
+                    'showTplWidget' => 1,
+                    'showBtn' => 0
                 ),
             )
         );
