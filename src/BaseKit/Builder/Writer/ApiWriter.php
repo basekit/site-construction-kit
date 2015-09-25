@@ -96,21 +96,34 @@ class ApiWriter implements WriterInterface
 
     public function writePage(PageBuilder $page, $siteRef)
     {
+        $pageData = array(
+            'menu' => 1,
+            'siteRef' => $siteRef,
+            'pageUrl' => $page->getName() == 'home' ? 'temporary' : $page->getName(),
+            'seo_title' => $page->getTitle(),
+            'status' => 'active',
+            'title' => $page->getTitle(),
+            'type' => 'page',
+            'headscript' => $page->getHeadScript(),
+            'templateType' => $page->getTemplateType()
+        );
+
+        if ($page->getParentId() > 0) {
+            $pageData = array_merge(
+                $pageData,
+                array(
+                    'folder' => $page->getParentId()
+                )
+            );
+        }
+
         $createPageCmd = $this->apiClient->getCommand(
             'CreateSitePage',
-            array(
-                'menu' => 1,
-                'siteRef' => $siteRef,
-                'pageUrl' => $page->getName() == 'home' ? 'temporary' : $page->getName(),
-                'seo_title' => $page->getTitle(),
-                'status' => 'active',
-                'title' => $page->getTitle(),
-                'type' => 'page',
-                'templateType' => $page->getTemplateType()
-            )
+            $pageData
         );
 
         $response = $createPageCmd->execute();
+
         $pageRef = $response['page']['ref'];
         $page->setPageRef($pageRef);
 
@@ -147,14 +160,65 @@ class ApiWriter implements WriterInterface
         $this->setFeatureImage($page, $siteRef);
     }
 
+    public function writeFolder(PageBuilder $page, $siteRef)
+    {
+        $createFolderCmd = $this->apiClient->getCommand(
+            'CreateSitePage',
+            array(
+                'menu' => 0,
+                'siteRef' => $siteRef,
+                'pageUrl' => $page->getName(),
+                'seo_title' => '',
+                'status' => 'active',
+                'title' => $page->getTitle(),
+                'type' => 'folder',
+                'folder' => 0,
+                'headscript' => $page->getHeadScript(),
+                'templateType' => 'default'
+            )
+        );
+
+        $response = $createFolderCmd->execute();
+
+        $folderRef = $response['page']['ref'];
+        $parentId = $response['page']['parentId'];
+
+        $page->setPageRef($folderRef);
+
+        $page->setParentId($parentId);
+
+        $page->updateChildParentIds();
+
+        $this->createCollection($page->getCollection(), $siteRef, $folderRef);
+
+        $updatePageCmd = $this->apiClient->getCommand(
+            'UpdateSitePage',
+            array(
+                'siteRef' => $siteRef,
+                'pageRef' => $folderRef,
+                'title' => $page->getTitle(),
+            )
+        );
+
+        $updatePageCmd->execute();
+    }
+
     public function writeSite(SiteBuilder $site)
     {
         if ($site->getSiteRef() === 0) {
-            $this->createSite($site);
+            $siteRef = $this->createSite($site);
         }
 
         foreach ($site->getPages() as $page) {
-            $this->writePage($page, $site->getSiteRef());
+            if ($page->getIsFolder()) {
+                $this->writeFolder($page, $site->getSiteRef());
+                $children = $page->getChildPages();
+                foreach ($children as $child) {
+                    $this->writePage($child, $site->getSiteRef());
+                }
+            } else {
+                $this->writePage($page, $site->getSiteRef());
+            }
         }
     }
 
@@ -254,6 +318,22 @@ class ApiWriter implements WriterInterface
             array(
                 'siteRef' => $siteRef,
                 'staticWidgetId' => $page->getFeatureWidgetId(),
+                'values' => array(
+                    'bgImg' => $page->getFeatureImageUrl(),
+                    'useTemplate' => 0,
+                    'showTplWidget' => 1,
+                    'showBtn' => 0
+                ),
+            )
+        );
+
+        $updateFeatureImageCmd->execute();
+
+        $updateFeatureImageCmd = $this->apiClient->getCommand(
+            'Updatestaticvaluesforastaticwidget',
+            array(
+                'siteRef' => $siteRef,
+                'staticWidgetId' => 'logo-logo',
                 'values' => array(
                     'bgImg' => $page->getFeatureImageUrl(),
                     'useTemplate' => 0,

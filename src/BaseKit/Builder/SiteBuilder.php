@@ -94,7 +94,7 @@ class SiteBuilder
         return $this->pages[$name];
     }
 
-    public function createPage($name, $title, $templateType = 'default')
+    public function createPage($name, $title, $templateType = 'default', $headScript = '')
     {
         if (empty($name)) {
             throw new Exception('Page name must be set');
@@ -108,6 +108,31 @@ class SiteBuilder
         $page->setName($name);
         $page->setTitle($title);
         $page->setTemplateType($templateType);
+        $page->setIsFolder(false);
+        $page->setHeadScript($headScript);
+
+        $this->pages[$name] = $page;
+
+        return $page;
+    }
+
+    public function createFolder($name, $title, array $children, $headScript = '')
+    {
+        if (empty($name)) {
+            throw new Exception('Folder name must be set');
+        }
+
+        if (empty($title)) {
+            $title = $name;
+        }
+
+        $page = new PageBuilder;
+        $page->setName($name);
+        $page->setTitle($title);
+        $page->setTemplateType('default');
+        $page->setIsFolder(true);
+        $page->setHeadScript($headScript);
+        $page->setChildPages($children);
 
         $this->pages[$name] = $page;
 

@@ -7,9 +7,13 @@ use BaseKit\Component\Collection;
 
 class PageBuilder extends CollectionBuilder
 {
+    protected $isFolder = false;
+    protected $childPages = array();
     protected $pageRef = 0;
+    protected $parentId = 0;
     protected $widgets = null;
     protected $name = null;
+    protected $headScript;
     protected $templateType = 'default';
 
     public function __construct()
@@ -26,6 +30,16 @@ class PageBuilder extends CollectionBuilder
     public function setPageRef($pageRef)
     {
         $this->pageRef = $pageRef;
+    }
+
+    public function getParentId()
+    {
+        return $this->parentId;
+    }
+
+    public function setParentId($parentId)
+    {
+        $this->parentId = $parentId;
     }
 
     public function setName($name)
@@ -56,5 +70,44 @@ class PageBuilder extends CollectionBuilder
     public function getTemplateType()
     {
         return $this->templateType;
+    }
+
+    public function setHeadScript($headScript)
+    {
+        $this->headScript = $headScript;
+    }
+
+    public function getHeadScript()
+    {
+        return $this->headScript;
+    }
+
+    public function setIsFolder($isFolder = true)
+    {
+        $this->isFolder = $isFolder;
+    }
+
+    public function getIsFolder()
+    {
+        return $this->isFolder;
+    }
+
+    public function setChildPages($childPages)
+    {
+        $this->childPages = $childPages;
+    }
+
+    public function getChildPages()
+    {
+        return $this->childPages;
+    }
+
+    public function updateChildParentIds()
+    {
+        if ($this->parentId && !empty($this->childPages)) {
+            foreach ($this->childPages as $page) {
+                $page->setParentId($this->parentId);
+            }
+        }
     }
 }

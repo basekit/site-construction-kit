@@ -82,6 +82,26 @@ class CollectionBuilder
         return $this->addWidget($name, 'Widget.Content', $values);
     }
 
+    public function addGallery($title = '', $images = array(), array $values = array())
+    {
+        $name = $this->getUniqueName('gallery');
+
+        $values = array_merge(
+            $values,
+            array(
+                'images' => $images,
+                'type' => 'widget.gallery',
+                'imageScale' => 'original',
+                'showTitle' =>  1,
+                'showDescription' => 1,
+                'title' => $title,
+                'localClass' => $this->generateLocalClass('widget.gallery'),
+            )
+        );
+
+        return $this->addWidget($name, 'Widget.Gallery', $values);
+    }
+
     private function generateLocalClass($type)
     {
         $randomCharacters = '';
@@ -92,13 +112,14 @@ class CollectionBuilder
         return str_replace('.', '-', strtolower($type)) . '-' . $randomCharacters;
     }
 
-    public function addImage($src, array $values = array())
+    public function addImage($src, $align = 'center', array $values = array())
     {
         $name = $this->getUniqueName('image');
 
         $values = array_merge(
             $values,
             array(
+                'align' => 'widget-align-' . $align,
                 'src' => $src
             )
         );
