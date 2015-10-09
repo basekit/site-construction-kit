@@ -222,6 +222,19 @@ class ApiWriter implements WriterInterface
         }
     }
 
+    public function resetSite(SiteBuilder $site)
+    {
+        if ($site->getSiteRef() !== null && $site->getSiteRef() > 0) {
+            $resetSiteCmd = $this->apiClient->getCommand(
+                'ResetSite',
+                array(
+                    'siteRef' => $site->getSiteRef(),
+                )
+            );
+            $resetSiteCmd->execute();
+        }
+    }
+
     public function publishSite(SiteBuilder $site)
     {
         if ($site->getSiteRef() > 0) {
