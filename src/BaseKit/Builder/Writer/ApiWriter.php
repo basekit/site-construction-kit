@@ -203,23 +203,41 @@ class ApiWriter implements WriterInterface
         $updatePageCmd->execute();
     }
 
-    public function writeSite(SiteBuilder $site)
+    public function writeSite(SiteBuilder $siteBuilder)
     {
-        if ($site->getSiteRef() === 0) {
+        if ($siteBuilder->getSiteRef() === 0) {
+            error_log('CREATE');
             $siteRef = $this->createSite($site);
         }
 
-        foreach ($site->getPages() as $page) {
+        foreach ($siteBuilder->getPages() as $page) {
             if ($page->getIsFolder()) {
-                $this->writeFolder($page, $site->getSiteRef());
+                $this->writeFolder($page, $siteBuilder->getSiteRef());
                 $children = $page->getChildPages();
                 foreach ($children as $child) {
-                    $this->writePage($child, $site->getSiteRef());
+                    $this->writePage($child, $siteBuilder->getSiteRef());
                 }
             } else {
-                $this->writePage($page, $site->getSiteRef());
+                $this->writePage($page, $siteBuilder->getSiteRef());
             }
         }
+
+        $getSiteCmd = $this->apiClient->getCommand(
+            'GetSite',
+            array(
+                'siteRef' => $siteBuilder->getSiteRef(),
+            )
+        );
+
+        $site = $getSiteCmd->execute();
+
+        $siteURL =  (!empty($site['site']['primaryUrl']))
+                    ? $site['site']['primaryUrl']
+                    : current($site['site']['domains']);
+
+        return array(
+            'url' => $siteURL,
+        );
     }
 
     public function resetSite(SiteBuilder $site)
