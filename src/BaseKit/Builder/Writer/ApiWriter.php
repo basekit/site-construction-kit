@@ -65,6 +65,18 @@ class ApiWriter implements WriterInterface
         }
     }
 
+    public function updateTemplate(SiteBuilder $site)
+    {
+        $updateSiteCmd = $this->apiClient->getCommand(
+            'UpdateSite',
+            array(
+                'siteRef' => $site->getSiteRef(),
+                'templateRef' => $site->getTemplateRef() > 0 ? $site->getTemplateRef() : 7,
+            )
+        );
+        $updateSiteCmd->execute();
+    }
+
     private function createCollection(Collection $collection, $siteRef, $pageRef)
     {
         foreach ($collection as $widget) {
