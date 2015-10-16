@@ -11,6 +11,10 @@ class CollectionBuilder
     protected $collectionName;
     protected $collection;
     protected $parent;
+    protected $footerContent;
+    protected $footerId;
+    protected $logoImageId = 'logo-logo';
+    protected $logoImageUrl = null;
     protected $featureImageUrl = null;
     protected $featureWidgetId = 'feature-featurehome';
     protected $hiddenTemplateWidgets = array();
@@ -100,6 +104,12 @@ class CollectionBuilder
         );
 
         return $this->addWidget($name, 'Widget.Gallery', $values);
+    }
+
+    public function addFooter($id, $content)
+    {
+        $this->setFooterId($id);
+        $this->setFooterContent($content);
     }
 
     private function generateLocalClass($type)
@@ -199,7 +209,7 @@ class CollectionBuilder
 
     public function setFeatureWidgetId($featureWidgetId)
     {
-        $this->featureWidgetId = 'feature-' . $featureWidgetId;
+        $this->featureWidgetId = $featureWidgetId;
     }
 
     public function getFeatureWidgetId()
@@ -215,5 +225,45 @@ class CollectionBuilder
     public function getFeatureImageUrl()
     {
         return $this->featureImageUrl;
+    }
+
+    public function setLogoWidgetId($logoImageId)
+    {
+        $this->logoImageId = $logoImageId;
+    }
+
+    public function getLogoWidgetId()
+    {
+        return $this->logoImageId;
+    }
+
+    public function setLogoImageUrl($logoImageUrl)
+    {
+        $this->logoImageUrl = $logoImageUrl;
+    }
+
+    public function getLogoImageUrl()
+    {
+        return $this->logoImageUrl;
+    }
+
+    public function setFooterContent($footerContent)
+    {
+        $this->footerContent = $footerContent;
+    }
+
+    public function getFooterContent()
+    {
+        return $this->footerContent;
+    }
+
+    public function setFooterId($footerId)
+    {
+        $this->footerId = $footerId;
+    }
+
+    public function getFooterId()
+    {
+        return $this->footerId;
     }
 }

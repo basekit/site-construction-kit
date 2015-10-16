@@ -140,7 +140,10 @@ class ApiWriter implements WriterInterface
         $page->setPageRef($pageRef);
 
         if ($page->getName() == 'home') {
-            // Update the new page to be home page
+
+            $this->setLogoImage($page, $siteRef);
+            $this->setFeatureImage($page, $siteRef);
+
             $updatePageCmd = $this->apiClient->getCommand(
                 'UpdateSitePage',
                 array(
@@ -169,7 +172,7 @@ class ApiWriter implements WriterInterface
 
         $this->setHiddenTemplateWidgets($page, $siteRef);
 
-        $this->setFeatureImage($page, $siteRef);
+        $this->setFooter($page, $siteRef);
     }
 
     public function writeFolder(PageBuilder $page, $siteRef)
@@ -218,7 +221,6 @@ class ApiWriter implements WriterInterface
     public function writeSite(SiteBuilder $siteBuilder)
     {
         if ($siteBuilder->getSiteRef() === 0) {
-            error_log('CREATE');
             $siteRef = $this->createSite($site);
         }
 
@@ -241,15 +243,9 @@ class ApiWriter implements WriterInterface
             )
         );
 
-        $site = $getSiteCmd->execute();
+        $response = $getSiteCmd->execute();
 
-        $siteURL =  (!empty($site['site']['primaryUrl']))
-                    ? $site['site']['primaryUrl']
-                    : current($site['site']['domains']);
-
-        return array(
-            'url' => $siteURL,
-        );
+        return $response['site'];
     }
 
     public function resetSite(SiteBuilder $site)
@@ -355,14 +351,14 @@ class ApiWriter implements WriterInterface
         if (null === ($featureImageUrl = $page->getFeatureImageUrl())) {
             return;
         }
-
+        error_log('setFeatureImage');
         $updateFeatureImageCmd = $this->apiClient->getCommand(
             'Updatestaticvaluesforastaticwidget',
             array(
                 'siteRef' => $siteRef,
                 'staticWidgetId' => $page->getFeatureWidgetId(),
                 'values' => array(
-                    'bgImg' => $page->getFeatureImageUrl(),
+                    'bgImg' => $featureImageUrl,
                     'useTemplate' => 0,
                     'showTplWidget' => 1,
                     'showBtn' => 0
@@ -370,22 +366,47 @@ class ApiWriter implements WriterInterface
             )
         );
 
-        $updateFeatureImageCmd->execute();
+        $response = $updateFeatureImageCmd->execute();
+    }
 
-        $updateFeatureImageCmd = $this->apiClient->getCommand(
+    private function setLogoImage(PageBuilder $page, $siteRef)
+    {
+        if (null === $page->getLogoWidgetId()) {
+            return;
+        }
+
+        $updateLogoImageCmd = $this->apiClient->getCommand(
             'Updatestaticvaluesforastaticwidget',
             array(
                 'siteRef' => $siteRef,
-                'staticWidgetId' => 'logo-logo',
+                'staticWidgetId' => $page->getLogoWidgetId(),
                 'values' => array(
-                    'bgImg' => $page->getFeatureImageUrl(),
                     'useTemplate' => 0,
                     'showTplWidget' => 1,
-                    'showBtn' => 0
                 ),
             )
         );
 
-        $updateFeatureImageCmd->execute();
+        $updateLogoImageCmd->execute();
+    }
+
+    private function setFooter(PageBuilder $page, $siteRef)
+    {
+        if (null === ($footerId = $page->getFooterId())) {
+            return;
+        }
+
+        $addFooterCmd = $this->apiClient->getCommand(
+            'Updatestaticvaluesforastaticwidget',
+            array(
+                'siteRef' => $siteRef,
+                'staticWidgetId' => $footerId,
+                'values' => array(
+                    'content' => $page->getFooterContent(),
+                ),
+            )
+        );
+
+        $addFooterCmd->execute();
     }
 }
