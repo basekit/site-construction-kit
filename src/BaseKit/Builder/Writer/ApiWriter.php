@@ -351,7 +351,6 @@ class ApiWriter implements WriterInterface
         if (null === ($featureImageUrl = $page->getFeatureImageUrl())) {
             return;
         }
-        error_log('setFeatureImage');
         $updateFeatureImageCmd = $this->apiClient->getCommand(
             'Updatestaticvaluesforastaticwidget',
             array(
