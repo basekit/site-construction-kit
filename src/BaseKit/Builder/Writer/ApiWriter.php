@@ -139,6 +139,33 @@ class ApiWriter implements WriterInterface
         $pageRef = $response['page']['ref'];
         $page->setPageRef($pageRef);
 
+        // Sometimes we have to clear down the widgets
+        // created by the content strategy when there
+        // is no option to change it to blank on a brand. 
+        $pageWidgetsCmd = $this->apiClient->getCommand(
+            'GetSitesWidgets',
+            array(
+                'siteRef' => $siteRef,
+                'pageRef' => $pageRef,
+            )
+        );
+        
+        $pageWidgets = $pageWidgetsCmd->execute();
+
+        if (count($pageWidgets) > 0 && isset($pageWidgets["widgets"])) {
+            foreach ($pageWidgets["widgets"] as $widget) {
+                $deleteWidgetCmd = $this->apiClient->getCommand(
+                    "DeleteWidget",
+                    array(
+                        "siteRef" => $siteRef,
+                        "widgetRef" => $widget["ref"],
+                    )
+                );
+
+                $deleteWidgetResponse = $deleteWidgetCmd->execute();
+            }    
+        }
+
         if ($page->getName() == 'home') {
 
             $this->setLogoImage($page, $siteRef);
