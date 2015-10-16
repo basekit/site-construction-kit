@@ -408,4 +408,18 @@ class ApiWriter implements WriterInterface
 
         $addFooterCmd->execute();
     }
+
+    public function addGlobalValue(SiteBuilder $site, $values)
+    {
+        if ($site->getSiteRef() !== null && $site->getSiteRef() > 0) {
+            $addGlobalValueCmd = $this->apiClient->getCommand(
+                'Updateaglobalvalue',
+                array_merge(
+                    array('siteRef' => $site->getSiteRef()),
+                    $values
+                )
+            );
+            $addGlobalValueCmd->execute();
+        }
+    }
 }
