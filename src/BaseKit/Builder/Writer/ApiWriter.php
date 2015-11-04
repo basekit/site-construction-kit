@@ -157,8 +157,8 @@ class ApiWriter implements WriterInterface
                 $deleteWidgetCmd = $this->apiClient->getCommand(
                     "DeleteWidget",
                     array(
-                        "siteRef" => $siteRef,
-                        "widgetRef" => $widget["ref"],
+                        "siteRef" => (int) $siteRef,
+                        "widgetRef" => (int) $widget["ref"],
                     )
                 );
 
