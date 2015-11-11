@@ -7,14 +7,28 @@ use BaseKit\Builder\SiteBuilder;
 use BaseKit\Builder\PageBuilder;
 use BaseKit\Component\Collection;
 use BaseKit\Builder\AccountHolderBuilder;
+use Guzzle\Http\Exception\BadResponseException;
 
 class ApiWriter implements WriterInterface
 {
     private $apiClient = null;
+    private $ignorePageCreationFailures = false;
 
     public function setApiClient(Client $apiClient)
     {
         $this->apiClient = $apiClient;
+    }
+
+    public function setIgnorePageCreationFailures($ignore)
+    {
+        $this->ignorePageCreationFailures = (bool) $ignore;
+    }
+
+    public function handlePageCreationFailures(\Exception $e)
+    {
+        if (!$this->ignorePageCreationFailures) {
+            throw $e;
+        }
     }
 
     public function createSite(SiteBuilder $site)
@@ -253,13 +267,25 @@ class ApiWriter implements WriterInterface
 
         foreach ($siteBuilder->getPages() as $page) {
             if ($page->getIsFolder()) {
-                $this->writeFolder($page, $siteBuilder->getSiteRef());
-                $children = $page->getChildPages();
-                foreach ($children as $child) {
-                    $this->writePage($child, $siteBuilder->getSiteRef());
+                try {
+                    $this->writeFolder($page, $siteBuilder->getSiteRef());
+                    $children = $page->getChildPages();
+                    foreach ($children as $child) {
+                        try {
+                            $this->writePage($child, $siteBuilder->getSiteRef());
+                        } catch (BadResponseException $e) {
+                            $this->handlePageCreationFailures($e);
+                        }
+                    }
+                } catch (BadResponseException $e) {
+                    $this->handlePageCreationFailures($e);
                 }
             } else {
-                $this->writePage($page, $siteBuilder->getSiteRef());
+                try {
+                    $this->writePage($page, $siteBuilder->getSiteRef());
+                } catch (BadResponseException $e) {
+                    $this->handlePageCreationFailures($e);
+                }
             }
         }
 
