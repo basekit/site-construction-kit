@@ -36,7 +36,7 @@ class ApiWriter implements WriterInterface
         $domains = $site->getDomains();
 
         if (empty($domains)) {
-            throw new Exception('Site has no domains');
+            throw new \Exception('Site has no domains');
         }
 
         $primaryDomain = array_shift($domains);
