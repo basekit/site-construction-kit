@@ -262,7 +262,7 @@ class ApiWriter implements WriterInterface
     public function writeSite(SiteBuilder $siteBuilder)
     {
         if ($siteBuilder->getSiteRef() === 0) {
-            $siteRef = $this->createSite($site);
+            $siteRef = $this->createSite($siteBuilder);
         }
 
         foreach ($siteBuilder->getPages() as $page) {
