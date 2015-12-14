@@ -97,7 +97,7 @@ class SiteBuilder
     public function createPage($name, $title, $templateType = 'default', $headScript = '')
     {
         if (empty($name)) {
-            throw new Exception('Page name must be set');
+            throw new \Exception('Page name must be set');
         }
 
         if (empty($title)) {
@@ -119,7 +119,7 @@ class SiteBuilder
     public function createFolder($name, $title, array $children, $headScript = '')
     {
         if (empty($name)) {
-            throw new Exception('Folder name must be set');
+            throw new \Exception('Folder name must be set');
         }
 
         if (empty($title)) {
