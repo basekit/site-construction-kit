@@ -1,7 +1,7 @@
 BaseKit Site Construction Kit
 =============================
 
-The [BaseKit] Site Construction Kit (SiCK) is a set of PHP classes that let you 
+The [BaseKit] Site Construction Kit (SiCK) is a set of PHP classes that let you
 build BaseKit sites.
 
 The purpose of the SiCK is to take care of the implementation details of building

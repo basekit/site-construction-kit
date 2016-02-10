@@ -6,13 +6,13 @@ use BaseKit\Builder\PageBuilder;
 
 class SiteBuilder
 {
-    protected $pages = array();
-    protected $domains = array();
-    protected $siteRef = 0;
-    protected $brandRef = 0;
+    protected $pages            = array();
+    protected $domains          = array();
+    protected $siteRef          = 0;
+    protected $brandRef         = 0;
     protected $accountHolderRef = 0;
-    protected $profileRef = 0;
-    protected $templateRef = 0;
+    protected $profileRef       = 0;
+    protected $templateRef      = 0;
 
     public function __construct()
     {
@@ -83,6 +83,27 @@ class SiteBuilder
     public function getPages()
     {
         return $this->pages;
+    }
+
+    public function addPage(PageBuilder $page)
+    {
+        if (empty($page->getName())) {
+            throw new \Exception('Page name must be set');
+        }
+
+        return $this->pages[$page->getName()] = $page;
+    }
+
+    public function addFolder(PageBuilder $folder, $children)
+    {
+        if (empty($folder->getName())) {
+            throw new \Exception('Folder name must be set');
+        }
+        if (!empty($children)) {
+            $folder->setChildPages($children);
+        }
+
+        return $this->pages[$folder->getName()] = $folder;
     }
 
     public function getPage($name)

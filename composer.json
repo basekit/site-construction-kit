@@ -2,7 +2,7 @@
 
     "name": "basekit/site-construction-kit",
     "description": "BaseKit Site Construction Kit.",
-
+    "version": "1.0.3",
     "authors": [
         {
             "name": "Simon Best",
