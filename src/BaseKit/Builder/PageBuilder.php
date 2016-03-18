@@ -7,13 +7,15 @@ use BaseKit\Component\Collection;
 
 class PageBuilder extends CollectionBuilder
 {
-    protected $isFolder = false;
-    protected $childPages = array();
-    protected $pageRef = 0;
-    protected $parentId = 0;
-    protected $widgets = null;
-    protected $name = null;
-    protected $headScript;
+    protected $isFolder     = false;
+    protected $seoTitle     = '';
+    protected $description  = '';
+    protected $childPages   = array();
+    protected $pageRef      = 0;
+    protected $parentId     = 0;
+    protected $widgets      = null;
+    protected $name         = null;
+    protected $headScript   = '';
     protected $templateType = 'default';
 
     public function __construct()
@@ -60,6 +62,26 @@ class PageBuilder extends CollectionBuilder
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function setSeoTitle($title)
+    {
+        $this->seoTitle = $title;
+    }
+
+    public function getSeoTitle()
+    {
+        return $this->seoTitle;
+    }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     public function setTemplateType($templateType)

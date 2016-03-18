@@ -94,20 +94,22 @@ class ApiWriter implements WriterInterface
     private function createCollection(Collection $collection, $siteRef, $pageRef)
     {
         foreach ($collection as $widget) {
+            $data = array(
+                'siteRef' => $siteRef,
+                'pageRef' => $pageRef,
+                'parentId' => $widget->getId(),
+                'position' => $widget->getPosition(),
+                'collection' => $widget->getCollectionName(),
+                'type' => $widget->getType(),
+                'name' => $widget->getName(),
+                'libraryItemRef' => 0,
+                'templateRef' => 0,
+                'values' => $widget->getValues()
+            );
+
             $addWidgetCmd = $this->apiClient->getCommand(
                 'AddWidgetToPage',
-                array(
-                    'siteRef' => $siteRef,
-                    'pageRef' => $pageRef,
-                    'parentId' => $widget->getId(),
-                    'position' => $widget->getPosition(),
-                    'collection' => $widget->getCollectionName(),
-                    'type' => $widget->getType(),
-                    'name' => $widget->getName(),
-                    'libraryItemRef' => 0,
-                    'templateRef' => 0,
-                    'values' => $widget->getValues()
-                )
+                $data
             );
 
             $response = $addWidgetCmd->execute();
@@ -123,15 +125,16 @@ class ApiWriter implements WriterInterface
     public function writePage(PageBuilder $page, $siteRef)
     {
         $pageData = array(
-            'menu' => 1,
-            'siteRef' => $siteRef,
-            'pageUrl' => $page->getName() == 'home' ? 'temporary' : $page->getName(),
-            'seo_title' => $page->getTitle(),
-            'status' => 'active',
-            'title' => $page->getTitle(),
-            'type' => 'page',
-            'headscript' => $page->getHeadScript(),
-            'templateType' => $page->getTemplateType()
+            'menu'            => 1,
+            'status'          => 'active',
+            'type'            => 'page',
+            'siteRef'         => $siteRef,
+            'pageUrl'         => $page->getName() == 'home' ? 'temporary' : $page->getName(),
+            'seo_title'       => $page->getSeoTitle(),
+            'description'     => $page->getDescription(),
+            'title'           => $page->getTitle(),
+            'headscript'      => $page->getHeadScript(),
+            'templateType'    => $page->getTemplateType()
         );
 
         if ($page->getParentId() > 0) {
@@ -171,7 +174,7 @@ class ApiWriter implements WriterInterface
                 $deleteWidgetCmd = $this->apiClient->getCommand(
                     "DeleteWidget",
                     array(
-                        "siteRef" => (int) $siteRef,
+                        "siteRef"   => (int) $siteRef,
                         "widgetRef" => (int) $widget["ref"],
                     )
                 );
@@ -188,9 +191,9 @@ class ApiWriter implements WriterInterface
             $updatePageCmd = $this->apiClient->getCommand(
                 'UpdateSitePage',
                 array(
-                    'siteRef' => $siteRef,
-                    'pageRef' => $pageRef,
-                    'type' => 'home',
+                    'siteRef'      => $siteRef,
+                    'pageRef'      => $pageRef,
+                    'type'         => 'home',
                     'templateType' => 'home'
                 )
             );
@@ -206,7 +209,7 @@ class ApiWriter implements WriterInterface
                 )
             );
 
-            $deletePageCmd->execute();
+            $responce = $deletePageCmd->execute();
         }
 
         $this->createCollection($page->getCollection(), $siteRef, $pageRef);
@@ -218,20 +221,23 @@ class ApiWriter implements WriterInterface
 
     public function writeFolder(PageBuilder $page, $siteRef)
     {
+        $data = array(
+            'menu'            => 0,
+            'siteRef'         => $siteRef,
+            'pageUrl'         => $page->getName(),
+            'seo_title'       => $page->getSeoTitle(),
+            'description'     => $page->getDescription(),
+            'status'          => 'active',
+            'title'           => $page->getTitle(),
+            'type'            => 'folder',
+            'folder'          => 0,
+            'headscript'      => $page->getHeadScript(),
+            'templateType'    => 'default'
+        );
+
         $createFolderCmd = $this->apiClient->getCommand(
             'CreateSitePage',
-            array(
-                'menu' => 0,
-                'siteRef' => $siteRef,
-                'pageUrl' => $page->getName(),
-                'seo_title' => '',
-                'status' => 'active',
-                'title' => $page->getTitle(),
-                'type' => 'folder',
-                'folder' => 0,
-                'headscript' => $page->getHeadScript(),
-                'templateType' => 'default'
-            )
+            $data
         );
 
         $response = $createFolderCmd->execute();
@@ -252,7 +258,7 @@ class ApiWriter implements WriterInterface
             array(
                 'siteRef' => $siteRef,
                 'pageRef' => $folderRef,
-                'title' => $page->getTitle(),
+                'title'   => $page->getTitle(),
             )
         );
 

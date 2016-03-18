@@ -94,7 +94,7 @@ class SiteBuilder
         return $this->pages[$page->getName()] = $page;
     }
 
-    public function addFolder(PageBuilder $folder, $children)
+    public function addFolder(PageBuilder $folder, array $children)
     {
         if (empty($folder->getName())) {
             throw new \Exception('Folder name must be set');
