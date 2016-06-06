@@ -122,7 +122,7 @@ class ApiWriter implements WriterInterface
         }
     }
 
-    public function writePage(PageBuilder $page, $siteRef)
+    public function writePage(PageBuilder $page, $siteRef, $homePageRef = null)
     {
         $pageData = array(
             'menu'            => 1,
@@ -198,18 +198,19 @@ class ApiWriter implements WriterInterface
                 )
             );
 
-            $updatePageCmd->execute();
+            $response = $updatePageCmd->execute();
 
-            // Delete the default home page
-            $deletePageCmd = $this->apiClient->getCommand(
-                'DeleteSitePage',
-                array(
-                    'siteRef' => $siteRef,
-                    'pageRef' => 1
-                )
-            );
-
-            $responce = $deletePageCmd->execute();
+            
+            if ($homePageRef !== null) {
+                $deletePageCmd = $this->apiClient->getCommand(
+                    'DeleteSitePage',
+                    array(
+                        'siteRef' => $siteRef,
+                        'pageRef' => $homePageRef
+                    )
+                );
+                $responce = $deletePageCmd->execute();
+            }
         }
 
         $this->createCollection($page->getCollection(), $siteRef, $pageRef);
@@ -271,6 +272,8 @@ class ApiWriter implements WriterInterface
             $siteRef = $this->createSite($siteBuilder);
         }
 
+        $homePageRef = $this->getHomePageRef($siteBuilder);
+
         foreach ($siteBuilder->getPages() as $page) {
             if ($page->getIsFolder()) {
                 try {
@@ -278,7 +281,7 @@ class ApiWriter implements WriterInterface
                     $children = $page->getChildPages();
                     foreach ($children as $child) {
                         try {
-                            $this->writePage($child, $siteBuilder->getSiteRef());
+                            $this->writePage($child, $siteBuilder->getSiteRef(), $homePageRef);
                         } catch (BadResponseException $e) {
                             $this->handlePageCreationFailures($e);
                         }
@@ -288,7 +291,7 @@ class ApiWriter implements WriterInterface
                 }
             } else {
                 try {
-                    $this->writePage($page, $siteBuilder->getSiteRef());
+                    $this->writePage($page, $siteBuilder->getSiteRef(), $homePageRef);
                 } catch (BadResponseException $e) {
                     $this->handlePageCreationFailures($e);
                 }
@@ -316,7 +319,7 @@ class ApiWriter implements WriterInterface
                     'siteRef' => $site->getSiteRef(),
                 )
             );
-            $resetSiteCmd->execute();
+            $resulkt = $resetSiteCmd->execute();
         }
     }
 
@@ -480,5 +483,26 @@ class ApiWriter implements WriterInterface
             );
             $addGlobalValueCmd->execute();
         }
+    }
+
+    private function getHomePageRef($siteBuilder)
+    {
+        $pagesCmd = $this->apiClient->getCommand(
+            'GetSitesPages',
+            array(
+                'siteRef' => $siteBuilder->getSiteRef(),
+                'type'    => 'all',
+                'display' => 'flat',
+            )
+        );
+        $pages = $pagesCmd->execute();
+
+        foreach ($pages['pages'] as $page) {
+            if ($page['type'] === 'home') {
+                return $page['ref'];
+            }
+        }
+
+        return null;
     }
 }
